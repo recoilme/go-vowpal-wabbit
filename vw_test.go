@@ -173,6 +173,7 @@ func TestReadDSJSON(t *testing.T) {
 	if len(examples) != 4 {
 		t.Error("expecting 4 examples")
 	}
+	fmt.Println(examples[0].GetActionScores())
 
 }
 
@@ -236,7 +237,7 @@ func TestReadJSONWithMultiLineLearn(t *testing.T) {
 	{"_labelIndex":1,"_label_Action":0,"_label_Cost":0,"_label_Probability":0.5,"_multi":[{"b_":"1","c_":"1","d_":"1"}, {"b_":"2","c_":"2","d_":"2"}]}
 	`
 
-	vw, _ := New("--json --cb_explore_adf --no_stdin")
+	vw, _ := New("--json --cb_explore_adf --no_stdin --quiet")
 	defer vw.Finish()
 
 	examples, err := vw.ReadJSON(input)
@@ -249,6 +250,7 @@ func TestReadJSONWithMultiLineLearn(t *testing.T) {
 	if examples[0].GetActionScore(0) != 0.5 {
 		t.Error("should have been 0.5")
 	}
+	//fmt.Println(examples[0].Get())
 }
 
 func ExampleVW() {

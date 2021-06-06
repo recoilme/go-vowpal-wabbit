@@ -4,9 +4,9 @@
 // and additional locking is required if libary is being called from multiple goroutines.
 package vw
 
-// #cgo CXXFLAGS: -std=c++11 -I${SRCDIR}/extra -I${SRCDIR} -O3 -Wall -g -Wno-sign-compare -Wno-unused-function  -I/usr/local/include
-// #cgo LDFLAGS: -lstdc++
-// #cgo pkg-config: libvw_c_wrapper libvw RapidJSON
+// #cgo CXXFLAGS: -std=c++11 -I${SRCDIR}/extra -I${SRCDIR} -O3 -Wall -g -Wno-sign-compare -Wno-unused-function  -I/usr/local/include -fvisibility=hidden
+// #cgo darwin LDFLAGS:  -L/usr/local/lib -lvw_c_wrapper -lvw -lallreduce -lboost_program_options -lz -lstdc++
+// #cgo linux LDFLAGS: -L/usr/local/lib /usr/local/lib/libvw_c_wrapper.a /usr/local/lib/libvw_io.a /usr/local/lib/libvw.a /usr/local/lib/liballreduce.a -lboost_program_options -lstdc++ -lm -lz
 // #include <vowpalwabbit/vwdll.h>
 // #include <stdlib.h>
 // #include "lib.hpp"
@@ -15,6 +15,9 @@ import (
 	"runtime"
 	"unsafe"
 )
+
+//  cg o CFLAGS: -I/usr/local/include/vowpalwabbit
+// #c go LDFLAGS: -lstdc++
 
 type vwError = C.VW_ERROR
 

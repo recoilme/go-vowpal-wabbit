@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	wabbit "github.com/orktes/go-vowpal-wabbit"
+	wabbit "github.com/recoilme/go-vowpal-wabbit"
 )
 
 func indexOf(val string, vals []string) int {

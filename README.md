@@ -4,8 +4,17 @@
 # go-vowpal-wabbit
 Vowpal Wabbit bindings for Golang
 
+# install (mac)
+
+```
+git clone --branch "releases/8.10.1" --recursive https://github.com/VowpalWabbit/vowpal_wabbit
+cd vowpal_wabbit/
+sudo make all
+sudo make install
+```
+
 ```go
-import "github.com/orktes/go-vowpal-wabbit"
+import "github.com/recoilme/go-vowpal-wabbit"
 ```
 
 ## Usage
