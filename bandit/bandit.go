@@ -137,16 +137,16 @@ func (b *Bandit) RewardLines(c *Cntxt, act []*Action, id int, reward float32) []
 		return lines
 	}
 	ctxt := fmt.Sprintf("shared |User %s", c.Properties())
-
+	lines = append(lines, ctxt)
 	for i, a := range act {
 		line := fmt.Sprintf("|Action %s", a.Properties())
 		//fmt.Println("a.id", a.ID, id, a.Prop["Type"], i, a)
 		if i == id {
-			line = fmt.Sprintf("%d:%f:%f %s", i, -1*reward, a.Prob, line)
+			line = fmt.Sprintf("%d:%f:%f %s", 0, -1*reward, a.Prob, line)
 		}
 		lines = append(lines, line)
 	}
-	lines = append(lines, ctxt)
+
 	return lines
 }
 
@@ -186,6 +186,7 @@ func Select(act []*Action) int {
 				return i
 			}
 			//act[0], act[i] = act[i], act[0] //swap
+			//act[0].Prob = act[1].Prob+0.01
 			return i
 		}
 	}

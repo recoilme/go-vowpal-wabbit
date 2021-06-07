@@ -38,8 +38,8 @@ func Test_Pred(t *testing.T) {
 	assert.NoError(t, err)
 	acts := make([]*Action, 0)
 	acts = append(acts, act1, act2)
-	//str := bnd.PredictLines(usr, acts)
-	//assert.EqualValues(t, []string{"|Action theme=sport", "|Action theme=music", "shared |User sex=f"}, str)
+	str := bnd.PredictLines(usr, acts)
+	assert.EqualValues(t, []string{"|Action theme=sport", "|Action theme=music", "shared |User sex=f"}, str)
 	acts, err = bnd.Predict(usr, acts)
 	//predPrint(bnd, usr, acts)
 
@@ -146,17 +146,18 @@ func actRnd() (act []*Action) {
 }
 
 func Test_Tom(t *testing.T) {
-	bnd, err := newBandit("--cb_explore_adf -q UA  --epsilon 0.2 --no_stdin")
+	bnd, err := newBandit("--cb_explore_adf -q UA --epsilon 0.2 --no_stdin")
 	//bnd, err := newBandit("--cb_explore_adf --q UA --cb_type dm --softmax --lambda 15")
 	assert.NoError(t, err)
 	defer bnd.vw.Finish()
 
 	rew := float32(0)
 	act := actRnd()
-	for i := 0; i < 2001; i++ {
+	for i := 0; i < 10001; i++ {
 		c := cntxtRnd()
 
-		act, err := bnd.Predict(c, act)
+		act2, err := bnd.Predict(c, act)
+		_ = act2
 		if err != nil {
 			log.Fatal(err)
 		}
