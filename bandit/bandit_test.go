@@ -34,7 +34,7 @@ func Test_Pred(t *testing.T) {
 			"theme": "music",
 		}}
 
-	bnd, err := newBandit("--cb_explore_adf -q UA --quiet --rnd 3 --epsilon 0.025")
+	bnd, err := NewBandit("--cb_explore_adf -q UA --quiet --rnd 3 --epsilon 0.025")
 	assert.NoError(t, err)
 	acts := make([]*Action, 0)
 	acts = append(acts, act1, act2)
@@ -146,18 +146,18 @@ func actRnd() (act []*Action) {
 }
 
 func Test_Tom(t *testing.T) {
-	bnd, err := newBandit("--cb_explore_adf -q UA --epsilon 0.2 --no_stdin")
+	bnd, err := NewBandit("--cb_explore_adf -q UA --epsilon 0.2 --no_stdin")
 	//bnd, err := newBandit("--cb_explore_adf --q UA --cb_type dm --softmax --lambda 15")
 	assert.NoError(t, err)
-	defer bnd.vw.Finish()
+	defer bnd.VW.Finish()
 
 	rew := float32(0)
 	act := actRnd()
 	for i := 0; i < 10001; i++ {
 		c := cntxtRnd()
 
-		act2, err := bnd.Predict(c, act)
-		_ = act2
+		act, err := bnd.Predict(c, act)
+		//_ = act2
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -182,10 +182,10 @@ func Test_Tom(t *testing.T) {
 }
 
 func Test_Explore(t *testing.T) {
-	bnd, err := newBandit("--cb_explore 7 --cover 3  --no_stdin --quiet")
+	bnd, err := NewBandit("--cb_explore 7 --cover 3  --no_stdin --quiet")
 	//bnd, err := newBandit("--cb_explore_adf --q UA --cb_type dm --softmax --lambda 15")
 	assert.NoError(t, err)
-	defer bnd.vw.Finish()
+	defer bnd.VW.Finish()
 	rew := float32(0)
 	act := actRnd()
 	for i := 0; i < 10000; i++ {
@@ -195,13 +195,13 @@ func Test_Explore(t *testing.T) {
 		// | tom aft
 		predStr := fmt.Sprintf(" | %s %s", c.Prop["usr"], c.Prop["time"])
 		//fmt.Println(predStr)
-		predictExample, err := bnd.vw.ReadExample(predStr)
+		predictExample, err := bnd.VW.ReadExample(predStr)
 		assert.NoError(t, err)
-		pred := bnd.vw.Predict(predictExample)
+		pred := bnd.VW.Predict(predictExample)
 		_ = pred
 
-		scores := predictExample.GetActionScores()
-		sel := weightedRandom(scores)
+		scores := predictExample.GetActionScores() //[0.8,0.2...0.1]
+		sel := weightedRandom(scores)              //win
 
 		r := getRew(c, act[sel])
 		//fmt.Println("r", r)
@@ -214,12 +214,12 @@ func Test_Explore(t *testing.T) {
 
 		example := fmt.Sprintf("%d:%f:%f | %s %s", (sel + 1), r*(-1), scores[sel], c.Prop["usr"], c.Prop["time"])
 		//fmt.Println(example, sel, pred, scores)
-		trainExample, err := bnd.vw.ReadExample(example)
+		trainExample, err := bnd.VW.ReadExample(example)
 		if err != nil {
 			panic(err)
 		}
 
-		pr := bnd.vw.Learn(trainExample)
+		pr := bnd.VW.Learn(trainExample)
 		_ = pr
 		//fmt.Println("pr", pr)
 		trainExample.Finish()

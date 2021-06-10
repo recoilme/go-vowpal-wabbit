@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
-	"sort"
 	"strings"
 	"sync"
 	"time"
@@ -19,7 +18,7 @@ func init() {
 
 type Bandit struct {
 	sync.Mutex
-	vw *wabbit.VW
+	VW *wabbit.VW
 }
 
 type Cntxt struct {
@@ -32,7 +31,7 @@ type Action struct {
 	Prob float32
 }
 
-func newBandit(options string) (*Bandit, error) {
+func NewBandit(options string) (*Bandit, error) {
 	if options == "" {
 		options = "--cb_explore_adf -b 18 -q UA --quiet --epsilon 0.2"
 	}
@@ -40,7 +39,7 @@ func newBandit(options string) (*Bandit, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Bandit{vw: vw}, err
+	return &Bandit{VW: vw}, err
 }
 
 func (c *Cntxt) Properties() string {
@@ -97,7 +96,7 @@ func (b *Bandit) Predict(c *Cntxt, act []*Action) ([]*Action, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = b.vw.MultiLinePredict(examples)
+	err = b.VW.MultiLinePredict(examples)
 	defer examples.Finish() //free
 	if err != nil {
 		return nil, err
@@ -105,16 +104,16 @@ func (b *Bandit) Predict(c *Cntxt, act []*Action) ([]*Action, error) {
 
 	// получение вероятностей для examples
 
-	//fmt.Println( examples[0].GetActionScores(), examples[0].GetActions())
+	//fmt.Println(examples[0].GetActionScores(), examples[0].GetActions())
 	scores := examples[0].GetActionScores()
 	for i, ind := range examples[0].GetActions() {
 		act[ind].Prob = scores[i]
 	}
 
 	// сортируем по вероятностям
-	sort.Slice(act, func(i, j int) bool {
-		return act[i].Prob > act[j].Prob
-	})
+	//sort.Slice(act, func(i, j int) bool {
+	//	return act[i].Prob > act[j].Prob
+	//})
 
 	return act, nil
 }
@@ -122,7 +121,7 @@ func (b *Bandit) Predict(c *Cntxt, act []*Action) ([]*Action, error) {
 func (b *Bandit) getExamples(list []string) (wabbit.ExampleList, error) {
 	examples := make([]*wabbit.Example, 0)
 	for _, v := range list {
-		ex, err := b.vw.ReadExample(v)
+		ex, err := b.VW.ReadExample(v)
 		if err != nil {
 			return nil, err
 		}
@@ -166,7 +165,7 @@ func (b *Bandit) Reward(c *Cntxt, act []*Action, id int, reward float32) error {
 	if err != nil {
 		return err
 	}
-	return b.vw.MultiLineLearn(examples)
+	return b.VW.MultiLineLearn(examples)
 }
 
 // Probability mass function. Return winned Action on first place
